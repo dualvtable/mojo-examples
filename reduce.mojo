@@ -26,7 +26,7 @@ struct ArrayInput:
         return self.data.load(x)
 
 # Use the https://en.wikipedia.org/wiki/Kahan_summation_algorithm
-fn reduce_cpu(data: ArrayInput, size: Int) -> Float32:
+fn reduce_sum_naive(data: ArrayInput, size: Int) -> Float32:
     var sum = data[0]
     var c : Float32 = 0.0
     for i in range(size):
@@ -37,6 +37,7 @@ fn reduce_cpu(data: ArrayInput, size: Int) -> Float32:
     return sum
 
 fn benchmark_reduce(size: Int):
+    print("Computing reduction sum for array num elements: ", size)
     var A = ArrayInput(size)
 
     var eval_begin : Float64 = now()
@@ -45,7 +46,7 @@ fn benchmark_reduce(size: Int):
     @parameter
     fn test_fn():
         try:
-            _ = reduce_cpu(A, size)
+            _ = reduce_sum_naive(A, size)
         except:
             pass
 
@@ -56,4 +57,4 @@ fn benchmark_reduce(size: Int):
 
 
 fn main():
-    benchmark_reduce(1 << 32)
+    benchmark_reduce(1 << 30)
