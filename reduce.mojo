@@ -10,7 +10,10 @@ from Random import rand
 from IO import print
 from Range import range
 from Time import now
+from Reductions import sum
+from Buffer import Buffer
 
+# Simple array struct
 struct ArrayInput:
     var data: DTypePointer[DType.float32]
 
@@ -26,6 +29,7 @@ struct ArrayInput:
         return self.data.load(x)
 
 # Use the https://en.wikipedia.org/wiki/Kahan_summation_algorithm
+# Simple summation of the array elements
 fn reduce_sum_naive(data: ArrayInput, size: Int) -> Float32:
     var sum = data[0]
     var c : Float32 = 0.0
@@ -36,11 +40,10 @@ fn reduce_sum_naive(data: ArrayInput, size: Int) -> Float32:
         sum = t
     return sum
 
-fn benchmark_reduce(size: Int):
+fn benchmark_naive_reduce_sum(size: Int):
     print("Computing reduction sum for array num elements: ", size)
     var A = ArrayInput(size)
 
-    var eval_begin : Float64 = now()
 
     @always_inline
     @parameter
@@ -51,10 +54,39 @@ fn benchmark_reduce(size: Int):
             pass
 
     let bench_time = Float64(Benchmark().run[test_fn]())
-    var eval_end : Float64 = now()
-    let execution_time = Float64((eval_end - eval_begin)) / 1e6
-    print("Completed in ", execution_time, "ms")
 
+fn benchmark_stdlib_reduce_sum(size: Int):
+    # Allocate a Buffer and then use the Mojo stdlib Reduction class
+    # TODO: Use globals
+    #alias numElem = size
+    alias numElem = 1 << 30
+    var A = Buffer[numElem, DType.float32].stack_allocation()
+    for i in range(numElem):
+        A[i] = Float32(i)
+
+    print("Computing reduction sum for array num elements: ", size)
+    var eval_begin : Float64 = now()
+
+    @always_inline
+    @parameter
+    fn test_fn():
+        try:
+            _ = sum[numElem, DType.float32](A)
+        except:
+            pass
+
+    let bench_time = Float64(Benchmark().run[test_fn]())
 
 fn main():
-    benchmark_reduce(1 << 30)
+    var size = 1 << 30
+    var eval_begin : Float64 = now()
+    benchmark_naive_reduce_sum(size)
+    var eval_end : Float64 = now()
+    var execution_time = Float64((eval_end - eval_begin)) / 1e6
+    print("Completed naive reduction sum in ", execution_time, "ms")
+
+    eval_begin = now()
+    benchmark_stdlib_reduce_sum(size)
+    eval_end = now()
+    execution_time = Float64((eval_end - eval_begin)) / 1e6
+    print("Completed stdlib reduction sum in ", execution_time, "ms")
