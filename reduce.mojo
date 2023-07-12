@@ -1,4 +1,4 @@
- Simple reduction operation on a large array of values to produce a single result
+# Simple reduction operation on a large array of values to produce a single result
 # Reductions and scans are common algorithm patterns in parallel computing.
 
 from Benchmark import Benchmark
