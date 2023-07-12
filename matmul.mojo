@@ -1,3 +1,5 @@
+# Example to demonstrate the naive matmul implementation in Mojo
+
 from Benchmark import Benchmark
 from DType import DType
 from Intrinsics import strided_load

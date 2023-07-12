@@ -7,6 +7,5 @@ A collection of sample programs written in the [Mojo](https://docs.modular.com/m
 Use the following sample command-line to run the programs:
 
 ```bash
-$ mojo run matmul.mojo
+$ mojo matmul.mojo
 ```
-
