@@ -4,7 +4,7 @@ from Range import range
 from Object import object
 from IO import print
 
-fn main():
-    print("hello mojo")
+def main() -> None:
+    print("Hello Mojo 🔥!")
     for x in range(9, 0, -3):
         print(x)
